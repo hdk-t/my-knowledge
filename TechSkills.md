@@ -617,6 +617,16 @@ https://qiita.com/Ken_tk/items/5f3715d7f97c620fa42c
 }
 ```
 ## Laravel
+### 公式命名規約
+|機能名|Controllerメソッド名|HTTPメソッド|パス|ルート名|
+|---|---|---|---|---|
+|一覧画面|index|GET|/リソース名|resource.index|
+|作成画面|create|GET|/リソース名/create|resource.create|
+|作成|store|POST|/リソース名|resource.store|
+|詳細画面|show|GET|/リソース名/{resource}|resource.show|
+|編集画面|edit|GET|/リソース名/{resource}/edit|resource.edit|
+|編集|update|PUT/PATCH|/リソース名/{resource}|resource.update|
+|削除|destroy|DELETE|/リソース名/{resource}|resource.destroy|
 ### バリデーションで数値を判定
 	regex:/^[0-9]+$/i
 ### FormRequestの書き方
