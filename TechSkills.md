@@ -457,6 +457,7 @@ DBの負荷が高い場合はクエリキャッシュの設定を疑ってみる
 - 正規化
 	- これはn対nの関係だと把握して設計する
 - テーブル数は可能な限り少なくする
+- 中途半端な状態で保存される可能性があるならば、null許容型にして、ビジネスロジックでバリデーションする
 ### マスタテーブル設計
 - マスタの内容をユーザーに選択させる場合は、sortカラムを入れる
 - マスタの表示名と説明を必ず入れる
@@ -702,7 +703,8 @@ class SampleForm extends FormRequest
     /**
      * バリデーションルールに行う処理
      */
-    protected function prepareForValidation() {
+    protected function prepareForValidation()
+    {
         // NOP
     }
 
