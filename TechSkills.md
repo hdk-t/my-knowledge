@@ -184,85 +184,85 @@ $1 $2 ...$n
 ### 単数(WHERE =)
 ```json
 {
-	"query": {
-		"bool": {
-			"must": {
-				"match": {
-					"_id": "123456"
-				}
-			}
-		}
-	}
+  "query": {
+    "bool": {
+      "must": {
+        "match": {
+          "_id": "123456"
+        }
+      }
+    }
+  }
 }
 ```
 ### 複数(WHERE IN)
 ```json
 {
-	"query": {
-		"bool": {
-			"must": {
-				"terms": {
-					"_id": ["123", "456"]
-				}
-			}
-		}
-	}
+  "query": {
+    "bool": {
+      "must": {
+        "terms": {
+          "_id": ["123", "456"]
+        }
+      }
+    }
+  }
 }
 ```
 ### 複数条件(AND)
 ```json
 {
-	"query": {
-		"bool": {
-			"must": [
-				{
-					"match": {
-						"field_name1": 123
-					}
-				},
-				{
-					"match": {
-						"field_name2": "abc"
-					}
-				}
-			]
-		}
-	}
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "field_name1": 123
+          }
+        },
+        {
+          "match": {
+            "field_name2": "abc"
+          }
+        }
+      ]
+    }
+  }
 }
 ```
 ### 複数条件否定(NOT)
 ```json
 {
-	"query": {
-		"bool": {
-			"must": [
-				{
-					"match": { "field_name1": 123 }
-				}
-			],
-			"must_not": [
-				{
-					"match": { "field_name2": "abc" }
-				}
-			]
-		}
-	}
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": { "field_name1": 123 }
+        }
+      ],
+      "must_not": [
+        {
+          "match": { "field_name2": "abc" }
+        }
+      ]
+    }
+  }
 }
 ```
 ### フィールドが存在していないもの
 ```json
 {
-    "query": {
-        "bool": {
-            "must_not": [
-                {
-                    "exists": {
-                        "field": "field_name"
-                    }
-                }
-            ]
+  "query": {
+    "bool": {
+      "must_not": [
+        {
+          "exists": {
+            "field": "field_name"
+          }
         }
+      ]
     }
+  }
 }
 ```
 # Git
@@ -436,37 +436,39 @@ DBの負荷が高い場合はクエリキャッシュの設定を疑ってみる
 ### マルチカラムINDEXの注意
 マルチカラムINDEXの場合は左から順にWHERE条件を付け足さないとINDEXが効かない
 # システム設計
-## ドキュメント(必要順)
+## ドキュメント(必須順)
 1. 画面設計書
- - 画面詳細図
+    - 画面デザイン図
     - 入力項目
     - 表示項目
     - イベント一覧
 	- 画面遷移図
 2. テーブル定義書
-	- ER図(規模による)
-3. 仕様書／機能一覧
+	- ER図
+	- エンティティ／データモデル
+1. 仕様書／機能一覧
 	- API仕様書
- - インターフェイス設計書(アプリ＜-＞リソース)
+	- インターフェイス設計書(アプリ＜-＞リソース)
 	- フローチャート(規模による)
-4. テスト仕様書
-5. インフラ構成図
-6. サイトマップ
-7. WBS
-8. 開発ルール
+2. テスト仕様書
+3. インフラ構成図
+4. サイトマップ
+5. WBS
+6. 開発ルール
 	- コーディングルール
 	- スタイルガイド
-9. 運用設計書
-10.CRUD図
+7. 運用設計書
+8. CRUD図
 ## テーブル設計
 ### 共通
 - 正規化
 	- これはn対nの関係だと把握して設計する
 - テーブル数は可能な限り少なくする
-- 中途半端な状態で保存される可能性があるならば、null許容型にして、ビジネスロジックでバリデーションする
+- 中途半端な状態でレコードに保存される可能性がある場合はnull許容型にして、ビジネスロジックでバリデーションする
 ### マスタテーブル設計
 - マスタの内容をユーザーに選択させる場合は、sortカラムを入れる
 - マスタの表示名と説明を必ず入れる
+- マスターの変更が頻繁にあり、リレーション先でマスターに応じた分岐処理がある場合、不具合が起こりやすいので、この場合は時点データが取得される前提の設計にする(注文履歴と商品マスタが良い例)
 ## テーブル定義変更
 - 定義変更処理中はテーブルがロックされる
 - レコード数が多い場合は実行時間に注意
@@ -501,6 +503,14 @@ FROM table_a AS a
 WHERE a.update_on BETWEEN '2023-05-07 00:00:00' AND '2023-05-13 23:59:59'
 GROUP BY DATE_FORMAT(a.update_on, '%Y/%m/%d');
 ```
+## テスト
+### テストした方が良いケース
+- 認証機能とユーザー種別が存在するアプリは他の種別のユーザーでテストする
+- リスト系表示の0件のパターン
+- マスター系データが不整合のパターン
+- 一括更新系のロジックは、無関係のデータが更新されていないか、更新日時を範囲指定して確認する
+- シングルページアプリケーションの場合、画面遷移時やモーダル開閉時のグローバル変数の初期化に注意する
+
 # コーディング
 ## DBに更新を行う際のバリデーションの基本
 - 文字数チェック
@@ -516,6 +526,9 @@ What → 何をするためにその処理が呼び出されたか
 Why → なぜその処理が実行されたのか
 ```
 https://qiita.com/tadashiro_ninomiya/items/19c774898c68add6185e
+## N + 1問題の対処法
+- JOIN句を使用する
+- LaravelならEloquentのwith関数を使用する
 # ShellScript
 ## PINGチェック
 ```sh
@@ -669,22 +682,18 @@ https://qiita.com/Ken_tk/items/5f3715d7f97c620fa42c
 }
 ```
 ## Laravel
-### 公式命名規約
-|機能名|Controllerメソッド名|HTTPメソッド|パス|ルート名|
-|---|---|---|---|---|
-|一覧画面|index|GET|/リソース名|resource.index|
-|作成画面|create|GET|/リソース名/create|resource.create|
-|作成|store|POST|/リソース名|resource.store|
-|詳細画面|show|GET|/リソース名/{resource}|resource.show|
-|編集画面|edit|GET|/リソース名/{resource}/edit|resource.edit|
-|編集|update|PUT/PATCH|/リソース名/{resource}|resource.update|
+### 命名規約(オリジナル含む)
 
-#### オリジナル
-|機能名|Controllerメソッド名|HTTPメソッド|パス|ルート名|
-|---|---|---|---|---|
-|削除確認画面|delete|GET|/リソース名/{resource}/delete|resource.delete|
-### バリデーションで数値を判定
-	regex:/^[0-9]+$/i
+| 機能名    | Controller アクション 名 | HTTPメソッド  | パス                       | ルート名             |
+| ------ | ------------------ | --------- | ------------------------ | ---------------- |
+| 一覧画面   | index              | GET       | /リソース名                   | resource.index   |
+| 作成画面   | create             | GET       | /リソース名/create            | resource.create  |
+| 作成処理   | store              | POST      | /リソース名                   | resource.store   |
+| 詳細画面   | show               | GET       | /リソース名/{resource}        | resource.show    |
+| 編集画面   | edit               | GET       | /リソース名/{resource}/edit   | resource.edit    |
+| 編集処理   | update             | PUT/PATCH | /リソース名/{resource}        | resource.update  |
+| 削除確認画面 | delete             | GET       | /リソース名/{resource}/delete | resource.delete  |
+| 削除処理   | destroy            | DELETE    | /リソース名/{resource}        | resource.destroy |
 ### FormRequestの書き方
 ```php
 <?php
